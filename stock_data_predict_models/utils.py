@@ -15,8 +15,8 @@ class DataProcessor():
         for i in x:
             pos.append(self.data[self.data[:,i] == 1])
             neg.append(self.data[self.data[:,i] == -1])
-            pos[-1] = pos[-1][random.randint(0,pos[-1].shape[0])]
-            neg[-1] = neg[-1][random.randint(0,neg[-1].shape[0])]
+            pos[-1] = pos[-1][random.randint(0,(pos[-1].shape[0]-1))]
+            neg[-1] = neg[-1][random.randint(0,(neg[-1].shape[0]-1))]
         pos = np.array(pos)
         neg = np.array(neg)
         return x,np.concatenate([pos,neg],axis=1)
@@ -24,11 +24,16 @@ class DataProcessor():
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
         DataBatch = tf.data.Dataset.from_tensor_slices((x,y))
-        DataBatch = train_db.batch(batchsz)
+        DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
 if __name__ == '__main__':
-    d = np.load(r'train_data.npy')
-    dp = DataProcessor(d,16)
-    x,y = dp.sample()
+    train_data = np.load(r'train_data.npy')
+    test_data = np.load(r'test_data.npy')
+    print('read')
+    train_dp = DataProcessor(train_data,256)
+    test_dp = DataProcessor(test_data,256)
+    print('processed')
+    train_db = train_dp.toDataBatch()
+    test_db = test_dp.toDataBatch()
     
