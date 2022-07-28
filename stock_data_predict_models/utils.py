@@ -21,10 +21,10 @@ class DataProcessor():
         neg = np.array(neg)
         return x,np.concatenate([pos,neg],axis=1)
 
-    def toDataBatch(self):
+    def toDataBatch(self,batchsz=8):
         x,y = self.sample()
-        train_db = tf.data.Dataset.from_tensor_slices((x,y))
-        train_db = train_db.batch(8)
+        DataBatch = tf.data.Dataset.from_tensor_slices((x,y))
+        DataBatch = train_db.batch(batchsz)
         return DataBatch
 
 if __name__ == '__main__':
