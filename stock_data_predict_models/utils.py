@@ -9,7 +9,7 @@ class DataProcessor():
         self.batch_size = batch_size
 
     def sample(self):
-        x = np.random.randint(self.data.shape[1],size=[self.batch_size])
+        x = np.random.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
         pos = []
         neg = []
         for i in x:
@@ -31,9 +31,11 @@ if __name__ == '__main__':
     train_data = np.load(r'train_data.npy')
     test_data = np.load(r'test_data.npy')
     print('read')
-    train_dp = DataProcessor(train_data,256)
-    test_dp = DataProcessor(test_data,256)
+    train_dp = DataProcessor(train_data,4)
+    test_dp = DataProcessor(test_data,4)
     print('processed')
     train_db = train_dp.toDataBatch()
     test_db = test_dp.toDataBatch()
+    sample = next(iter(train_db))
+    print('batch:', sample)
     
