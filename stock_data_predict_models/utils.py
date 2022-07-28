@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 import random
 
-class DataBatch():
+class DataProcessor():
     def __init__(self,data,batch_size):
         self.data = data
         self.batch_size = batch_size
@@ -19,9 +20,15 @@ class DataBatch():
         pos = np.array(pos)
         neg = np.array(neg)
         return x,np.concatenate([pos,neg],axis=1)
-        
+
+    def toDataBatch(self):
+        x,y = self.sample()
+        train_db = tf.data.Dataset.from_tensor_slices((x,y))
+        train_db = train_db.batch(8)
+        return DataBatch
+
 if __name__ == '__main__':
     d = np.load(r'train_data.npy')
-    db = DataBatch(d,16)
-    x,y = db.sample()
+    dp = DataProcessor(d,16)
+    x,y = dp.sample()
     
