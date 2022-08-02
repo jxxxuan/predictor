@@ -3,7 +3,7 @@ import yfinance as yf
 import utils
 
 def update(cdata=None,write=True):
-    name_list = pd.read_csv(r'name_list.csv',index_col=0,squeeze=True)
+    name_list = pd.read_csv(r'name_list.csv',index_col=0).index
     
     if cdata == None:
         print('reading cdata.csv')

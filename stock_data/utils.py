@@ -23,6 +23,8 @@ def update_bsdata(new_df,data_type,df=None,write=True):
     else:
         return df
 
+'''
+expired : 01-08-22
 def update_name_list():
     tickers_list = set(pd.read_csv(r'name_list.csv',index_col=0)['symbols'])
     delisted_tickers = set(pd.read_csv(r'delisted_tickers.csv',index_col=0)['delisted_symbols'])
@@ -30,7 +32,8 @@ def update_name_list():
     tickers_list = tickers_list - delisted_tickers
     pd.DataFrame(list(tickers_list),columns=['symbols']).to_csv(r'name_list.csv')
     print('complete')
-    
+'''
+
 '''
 def count_bdata(df):
     l = []
@@ -44,20 +47,17 @@ def count_sdata(df):
     return pd.DataFrame([list(df.count())],index=['count'],columns=df.columns)
 '''
 
+
 def update_delisted_tickers(delisted_sym,tickers_list):
     if len(delisted_sym) == 0:
         return
-    
-    df = set(pd.read_csv(r'delisted_tickers.csv',index_col=0,squeeze=True))
-    print(len(df))
-    print(len(delisted_sym))
-    df = df | delisted_sym
-    print(len(df))
-    df = pd.Series(list(df),name='symbols')
-    df.to_csv(r'delisted_tickers.csv')
 
-    tickers_list = tickers_list - delisted_sym
-    pd.Series(list(tickers_list),name='symbols').to_csv(r'name_list.csv')
+    delisted_sym.append([pd.read_csv(r'delisted_tickers.csv',index_col=0)])
+    delisted_sym = pd.concat(delisted_sym)
+    delisted_sym.to_csv(r'delisted_tickers.csv')
+
+    tickers_list = tickers_list.drop(delisted_sym['Symbols'])
+    tickers_list.to_csv(r'name_list.csv')
 
 def today(utc):
     return datetime.datetime.utcnow().astimezone(datetime.timezone(datetime.timedelta(hours=utc)))
