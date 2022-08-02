@@ -1,6 +1,5 @@
 import pandas as pd
 import yfinance as yf
-from yahoo_fin import stock_info as si
 import datetime
 
 def sorting(cdata):
@@ -48,23 +47,29 @@ def count_sdata(df):
 '''
 
 
-def update_delisted_tickers(delisted_sym,tickers_list):
+def update_delisted_tickers(delisted_sym,name_list):
     if len(delisted_sym) == 0:
         return
+    
+    delisted_sym = name_list.loc[delisted_sym]
+    name_list = name_list.drop(delisted_sym.index)
+    delisted_sym = pd.concat([delisted_sym,pd.read_csv(r'delisted_tickers.csv',index_col=0)])
 
-    delisted_sym.append([pd.read_csv(r'delisted_tickers.csv',index_col=0)])
-    delisted_sym = pd.concat(delisted_sym)
     delisted_sym.to_csv(r'delisted_tickers.csv')
-
-    tickers_list = tickers_list.drop(delisted_sym['Symbols'])
-    tickers_list.to_csv(r'name_list.csv')
+    name_list.to_csv(r'name_list.csv')
 
 def today(utc):
     return datetime.datetime.utcnow().astimezone(datetime.timezone(datetime.timedelta(hours=utc)))
 
+def area(cdata):
+    area = pd.Series(range(1,len(cdata.columns)+1)) * cdata.count()
+    area.plot()
 
-
+def count(cdata):
+    cdata.count().plot()
 '''
 if __name__ == '__main__':
-    d = update()
+    nl = pd.read_csv(r'name_list.csv')
+    dl = pd.read_csv(r'delisted_tickers.csv')
+    update_delisted_tickers(dl,nl)
 '''

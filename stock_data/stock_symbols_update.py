@@ -3,25 +3,25 @@ import yfinance as yf
 import utils
 
 def update(cdata=None,write=True):
-    name_list = pd.read_csv(r'name_list.csv',index_col=0).index
+    name_list = pd.read_csv(r'name_list.csv',index_col=0)
     
+    print('reading sdata.csv')
+    sdata = pd.read_csv(r'sdata.csv',index_col=0,squeeze=True)
+
     if cdata == None:
         print('reading cdata.csv')
         cdata = pd.read_csv(r'cdata.csv',index_col=0)
         cdata = cdata.astype('float32')
         cdata.index = pd.DatetimeIndex(cdata.index)
-
-    print('reading sdata.csv')
-    sdata = pd.read_csv(r'sdata.csv',index_col=0,squeeze=True)
     
-    new_name_list = set(name_list) - set(cdata.columns) - set(sdata.index)
+    new_name_list = set(name_list.index) - set(cdata.columns) - set(sdata.index)
     if len(new_name_list) == 0:
         print('cdata and sdata was up to date')
         return cdata
     
     print(len(new_name_list))
     cdata_list = [cdata]
-    delisted_sym = set()
+    delisted_sym = []
     
     try:
         for name in new_name_list:
@@ -29,7 +29,7 @@ def update(cdata=None,write=True):
             new_data = yf.Ticker(name).history(period='max')['Close']
             if new_data.empty:
                 print('failure')
-                delisted_sym.add(name)
+                delisted_sym.append(name)
             else:
                 print('done')
                 new_data.name = name
@@ -42,7 +42,7 @@ def update(cdata=None,write=True):
         print('terminate')
     finally:
         print('update process')
-        utils.update_delisted_tickers(delisted_sym,new_name_list)
+        utils.update_delisted_tickers(delisted_sym,name_list)
         if not(len(cdata_list) <= 1):
             cdata = pd.concat(cdata_list,axis=1)
             cdata = cdata.astype('float32')
