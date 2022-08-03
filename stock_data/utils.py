@@ -44,8 +44,7 @@ def count_bdata(df):
 
 def count_sdata(df):
     return pd.DataFrame([list(df.count())],index=['count'],columns=df.columns)
-'''
-
+'''   
 
 def update_delisted_tickers(delisted_sym,name_list):
     if len(delisted_sym) == 0:
