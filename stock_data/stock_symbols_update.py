@@ -4,15 +4,14 @@ import utils
 
 def update(cdata=None,write=True):
     name_list = pd.read_csv(r'name_list.csv',index_col=0)
-    
-    print('reading sdata.csv')
     sdata = pd.read_csv(r'sdata.csv',index_col=0,squeeze=True)
-
+    
     if cdata == None:
         print('reading cdata.csv')
-        cdata = pd.read_csv(r'cdata.csv',index_col=0)
-        cdata = cdata.astype('float32')
-        cdata.index = pd.DatetimeIndex(cdata.index)
+        names = pd.read_csv(r'cdata.csv',index_col=0,nrows=0)
+        names = dict.fromkeys(names, 'float32')
+        names['index'] = 'datetime64'
+        cdata = pd.read_csv(r'cdata.csv',index_col=0,dtype = names)
     
     new_name_list = set(name_list.index) - set(cdata.columns) - set(sdata.index)
     if len(new_name_list) == 0:
@@ -33,7 +32,7 @@ def update(cdata=None,write=True):
             else:
                 print('done')
                 new_data.name = name
-                if new_data.count() < 300:
+                if new_data.count() < 3652:
                     sdata[name] = new_data.count()
                 else:
                     cdata_list.append(new_data)
@@ -54,6 +53,7 @@ def update(cdata=None,write=True):
         if write:
             cdata.to_csv(r'cdata.csv')
             sdata.to_csv(r'sdata.csv')
+            update_cdata_detail(cdata)
         else:
             return cdata,sdata
 

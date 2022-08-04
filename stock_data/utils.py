@@ -60,10 +60,14 @@ def update_delisted_tickers(delisted_sym,name_list):
 def today(utc):
     return datetime.datetime.utcnow().astimezone(datetime.timezone(datetime.timedelta(hours=utc)))
 
-def area(cdata):
-    area = pd.Series(range(1,len(cdata.columns)+1)) * cdata.count()
-    area.plot()
-
+def update_cdata_detail(cdata,detail=None):
+    if detail == None:
+        detail = pd.read_csv(r'cdata_details.csv',index_col=0)
+    detail['x'] = pd.Series(range(1,len(cdata.columns)+1))
+    detail['y'] = cdata.count()
+    detail['area'] = detail['y'] * detail['x']
+    detail.to_csv(r'cdata_details.csv')
+    
 def count(cdata):
     cdata.count().plot()
 '''
