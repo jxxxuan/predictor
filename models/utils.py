@@ -18,9 +18,7 @@ class DataProcessor():
             yn.append(random.choice(np.arange(self.data.shape[0])[self.data[:,x[i]] == -1], size=[10]))
 
         y = np.concatenate([self.data[yp],self.data[yn]],axis=2)
-        print(y.shape)
         y = np.mean(y,axis=1)
-        print(x.shape,y.shape)
         return x,y
 
     def toDataBatch(self,batchsz=8):
