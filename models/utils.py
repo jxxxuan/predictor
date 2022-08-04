@@ -17,7 +17,7 @@ class DataProcessor():
             yp.append(choice(np.arange(self.data.shape[0])[self.data[:,x[i]] == 1]))  
             yn.append(choice(np.arange(self.data.shape[0])[self.data[:,x[i]] == -1]))
 
-        return x,np.concatenate([self.data[x,yp],self.data[x,yn]],axis=1)
+        return x,np.concatenate([self.data[yp,x],self.data[yn,x]],axis=1)
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
