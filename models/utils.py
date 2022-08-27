@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from tensorflow.data import Dataset
 from numpy import random
 from time import time
@@ -42,10 +43,10 @@ class LabelProcessor():
         DataBatch = Dataset.from_tensor_slices((x,y))
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
-    
+
 if __name__ == '__main__':
-    train_data = np.load(r'int_data/974_test.npy')
+    train_data = pd.read_pickle(r'label_data/974_test.pkl')['label']
     t1 = time()
-    train_dp = DataProcessor(train_data,128,10)
+    train_dp = LabelProcessor(train_data,128)
     train_db = train_dp.toDataBatch()
     print(time() - t1)
