@@ -34,7 +34,7 @@ class LabelProcessor():
         self.batch_size = batch_size
 
     def sample(self):
-        s = self.data.sample(batch_size)
+        s = self.data.sample(self.batch_size)
         return s.index.values,s.values
 
     def toDataBatch(self,batchsz=8):
