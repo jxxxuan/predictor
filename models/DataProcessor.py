@@ -31,14 +31,14 @@ class Cdata6808Processor():
         return DataBatch
 
 class LabelProcessor():
-    def __init__(self,data,batch_size):
+    def __init__(self,data,name_list,batch_size):
         self.data = data
         self.batch_size = batch_size
         self.length = len(set(self.data))
 
     def sample(self):
-        s = self.data.sample(self.batch_size)
-        return s.index.values,s.values
+        s = self.name_list.sample(self.batch_size)
+        return data[s.index,:],s.values
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
