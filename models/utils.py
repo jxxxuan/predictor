@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from tensorflow.data import Dataset
 from numpy import random
 from time import time
