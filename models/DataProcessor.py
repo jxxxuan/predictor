@@ -34,6 +34,7 @@ class LabelProcessor():
     def __init__(self,data,name_list,batch_size):
         self.data = data
         self.batch_size = batch_size
+        self.name_list = name_list
         self.length = len(set(self.name_list))
 
     def sample(self):
