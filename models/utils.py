@@ -4,7 +4,7 @@ from numpy import random
 from time import time
 
 class DataProcessor():
-    def __init__(self,data,batch_size,avr):
+    def __init__(self,data,batch_size,avr=1):
         self.data = data
         self.batch_size = batch_size
         self.avr= avr
@@ -28,10 +28,24 @@ class DataProcessor():
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
+class LabelProcessor():
+    def __init__(self,data,batch_size):
+        self.data = data
+        self.batch_size = batch_size
 
+    def sample(self):
+        s = self.data.sample(batch_size)
+        return s.index.values,s.values
+
+    def toDataBatch(self,batchsz=8):
+        x,y = self.sample()
+        DataBatch = Dataset.from_tensor_slices((x,y))
+        DataBatch = DataBatch.batch(batchsz)
+        return DataBatch
+    
 if __name__ == '__main__':
-    train_data = np.load(r'train_data.npy')
+    train_data = np.load(r'int_data/974_test.npy')
     t1 = time()
-    train_dp = DataProcessor(train_data,128)
+    train_dp = DataProcessor(train_data,128,10)
     train_db = train_dp.toDataBatch()
     print(time() - t1)
