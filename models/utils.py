@@ -5,12 +5,11 @@ from tensorflow.data import Dataset
 from numpy import random
 from time import time
 
-class DataProcessor():
+class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
         self.data = data
         self.batch_size = batch_size
         self.avr= avr
-        self.length = len(set(data))
 
     def sample(self):
         x = np.random.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
@@ -35,6 +34,7 @@ class LabelProcessor():
     def __init__(self,data,batch_size):
         self.data = data
         self.batch_size = batch_size
+        self.length = len(set(self.data))
 
     def sample(self):
         s = self.data.sample(self.batch_size)
