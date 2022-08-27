@@ -9,6 +9,7 @@ class DataProcessor():
         self.data = data
         self.batch_size = batch_size
         self.avr= avr
+        self.length = len(set(data))
 
     def sample(self):
         x = np.random.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
@@ -36,10 +37,12 @@ class LabelProcessor():
 
     def sample(self):
         s = self.data.sample(self.batch_size)
+        print(s)
         return s.index.values,s.values
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
+        y = tf.one_hot(y, depth=self.length)
         DataBatch = Dataset.from_tensor_slices((x,y))
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
