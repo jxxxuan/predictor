@@ -39,7 +39,7 @@ class LabelProcessor():
 
     def sample(self):
         s = self.name_list.sample(self.batch_size)
-        return data[s.index,:],s.values
+        return self.data[s.index,:],s.values
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
@@ -49,8 +49,9 @@ class LabelProcessor():
         return DataBatch
 
 if __name__ == '__main__':
-    train_data = pd.read_pickle(r'label_data/974_test.pkl')['label']
+    nl = pd.read_pickle(r'label_data/973_test.pkl')['label']
+    data = np.load(r'C:\Users\Windows\Documents\GitHub\predictor\models\973_7D\ckpt\emb_weights.npy')
     t1 = time()
-    train_dp = LabelProcessor(train_data,128)
+    train_dp = LabelProcessor(nl,data,128)
     train_db = train_dp.toDataBatch()
     print(time() - t1)
