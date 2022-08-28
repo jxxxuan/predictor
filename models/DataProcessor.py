@@ -10,6 +10,7 @@ class Cdata6808Processor():
         self.data = data
         self.batch_size = batch_size
         self.avr= avr
+        self.range = np.arange(self.data.shape[0])
 
     def sample(self):
         x = np.random.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
@@ -17,8 +18,8 @@ class Cdata6808Processor():
         yp = []
         yn = []
         for i in range(self.batch_size):
-            yp.append(random.choice(np.arange(self.data.shape[0])[self.data[:,x[i]] == 1], size=[self.avr]))  
-            yn.append(random.choice(np.arange(self.data.shape[0])[self.data[:,x[i]] == -1], size=[self.avr]))
+            yp.append(random.choice(self.range[self.data[:,x[i]] == 1], size=[self.avr]))  
+            yn.append(random.choice(self.range[self.data[:,x[i]] == -1], size=[self.avr]))
 
         y = np.concatenate([self.data[yp],self.data[yn]],axis=2)
         y = np.mean(y,axis=1)
@@ -30,6 +31,30 @@ class Cdata6808Processor():
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
+class Cdata3404Processor():
+    def __init__(self,data,batch_size,input_size=100):
+        self.data = data
+        self.batch_size = batch_size
+        self.input_size= input_size
+        self.b = self.data != 0
+        self.range = np.arange(self.data.shape[1])
+
+    def sample(self):
+        yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
+        x = np.zeros([2,self.batch_size,self.input_size],dtype='int16')
+        
+        for i in range(self.batch_size):
+            x[0,i] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
+            x[1,i] = self.data[yp[i]][[x[0,i]]]
+            
+        return x,self.data[yp]
+
+    def toDataBatch(self,batchsz=8):
+        x,y = self.sample()
+        DataBatch = Dataset.from_tensor_slices((x,y))
+        DataBatch = DataBatch.batch(batchsz)
+        return DataBatch
+        
 class LabelProcessor():
     def __init__(self,data,name_list,batch_size):
         self.data = data
@@ -49,9 +74,9 @@ class LabelProcessor():
         return DataBatch
 
 if __name__ == '__main__':
-    nl = pd.read_pickle(r'label_data/973_test.pkl')['label']
-    data = np.load(r'C:\Users\Windows\Documents\GitHub\predictor\models\973_7D\ckpt\emb_weights.npy')
+    
+    data = np.load(r'C:\Users\Windows\Documents\GitHub\predictor\models\int_data\973_train.npy')
     t1 = time()
-    train_dp = LabelProcessor(nl,data,128)
+    train_dp = Cdata3404Processor(data,4)
     train_db = train_dp.toDataBatch()
     print(time() - t1)
