@@ -4,75 +4,48 @@ import datetime
 
 def sorting(cdata):
     return cdata[cdata.count().sort_values(ascending=False).index]
-    
-def update_bsdata(new_df,data_type,df=None,write=True):
-    if df == None:
-        print('reading...')
-        if data_type == 'sdata':
-            df = pd.read_csv(r'sdata.csv',index_col=0)
-        elif data_type == 'bdata':
-            df = pd.read_csv(r'bdata.csv',index_col=0)
-        df.index = pd.DatetimeIndex(df.index)
-        
-    print('update_process')
-    df.update(new_df)
-
-    if write:
-        df.to_csv(data_type+'.csv')
-    else:
-        return df
-
-'''
-expired : 01-08-22
-def update_name_list():
-    tickers_list = set(pd.read_csv(r'name_list.csv',index_col=0)['symbols'])
-    delisted_tickers = set(pd.read_csv(r'delisted_tickers.csv',index_col=0)['delisted_symbols'])
-    tickers_list = tickers_list | set(si.tickers_sp500()) | set(si.tickers_other()) | set(si.tickers_dow()) | set(si.tickers_ftse250()) | set(si.tickers_ibovespa()) | set(si.tickers_niftybank()) | set(si.tickers_nifty50())
-    tickers_list = tickers_list - delisted_tickers
-    pd.DataFrame(list(tickers_list),columns=['symbols']).to_csv(r'name_list.csv')
-    print('complete')
-'''
-
-'''
-def count_bdata(df):
-    l = []
-    for name in df.columns:
-        d = df[name]
-        d = d[d.first_valid_index():d.last_valid_index()]
-        l.append(d[d.isna()].sum())
-    df = pd.DataFrame([[l],df.count()],index=['len_of_na','count'],columns=df.columns)
-
-def count_sdata(df):
-    return pd.DataFrame([list(df.count())],index=['count'],columns=df.columns)
-'''   
 
 def update_delisted_tickers(delisted_sym,name_list):
     if len(delisted_sym) == 0:
         return
     
-    delisted_sym = name_list.loc[delisted_sym]
-    name_list = name_list.drop(delisted_sym.index)
-    delisted_sym = pd.concat([delisted_sym,pd.read_csv(r'delisted_tickers.csv',index_col=0)])
-
-    delisted_sym.to_csv(r'delisted_tickers.csv')
+    name_list.loc[delisted_sym,'status'] = 'delisted'
     name_list.to_csv(r'name_list.csv')
 
-def today(utc):
+def today(utc=0):
     return datetime.datetime.utcnow().astimezone(datetime.timezone(datetime.timedelta(hours=utc)))
 
-def update_cdata_detail(cdata,detail=None):
-    if detail == None:
-        detail = pd.read_csv(r'cdata_details.csv',index_col=0)
-    detail['x'] = pd.Series(range(1,len(cdata.columns)+1))
-    detail['y'] = cdata.count()
+def update_cdata_detail(cdata,detail=None,image=True):
+    print('update cdata details')
+
+    print(cdata)
+    detail = pd.DataFrame(data = {'x' : range(1,len(cdata.columns)+1), 'y' : cdata.count()},index=cdata.columns)
     detail['area'] = detail['y'] * detail['x']
-    detail.to_csv(r'cdata_details.csv')
+    print(detail)
+    detail.to_csv(r'train_details.csv')
+    detail.plot().get_figure().savefig(r'train_area.jpg')
     
 def count(cdata):
-    cdata.count().plot()
-'''
+    cdata.count().plot().get_figure().savefig(r'count_train.jpg')
+
+def update_last_update(cdata = None,write=True):
+    if cdata is None:
+        raise Exception('cdata is None')
+    
+    nl = pd.read_csv('name_list.csv',index_col=0)
+    try:
+        print('update process')
+        for name in cdata.columns:
+            nl.loc[name,'last_update'] = cdata[name].last_valid_index()
+    except KeyboardInterrupt as e:
+        print('terminate')
+    finally:
+        print(nl)
+        if write:
+            nl.to_csv(r'name_list.csv')
+            print('last update : complete')
+        return nl
+
 if __name__ == '__main__':
-    nl = pd.read_csv(r'name_list.csv')
-    dl = pd.read_csv(r'delisted_tickers.csv')
-    update_delisted_tickers(dl,nl)
-'''
+    cdata = pd.read_pickle(r'cdata_got_sector.pkl')
+    update_cdata_detail(cdata)

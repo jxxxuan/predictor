@@ -1,0 +1,141 @@
+Symbol	Description
+A7.C	MSCI EMI Continuation
+A7H23	MSCI EMI {Mar 23}
+A7U22	MSCI EMI {Sep 22}
+A7Z22	MSCI EMI {Dec 22}
+A8.C	MSCI Far East ex-Japan Continuation
+A8H23	MSCI Far East ex-Japan {Mar 23}
+A8H24	MSCI Far East ex-Japan {Mar 24}
+A8H25	MSCI Far East ex-Japan {Mar 25}
+A8M23	MSCI Far East ex-Japan {Jun 23}
+A8M24	MSCI Far East ex-Japan {Jun 24}
+A8M25	MSCI Far East ex-Japan {Jun 25}
+A8U22	MSCI Far East ex-Japan {Sep 22}
+A8U23	MSCI Far East ex-Japan {Sep 23}
+A8U24	MSCI Far East ex-Japan {Sep 24}
+A8Z22	MSCI Far East ex-Japan {Dec 22}
+A8Z23	MSCI Far East ex-Japan {Dec 23}
+A8Z24	MSCI Far East ex-Japan {Dec 24}
+AE	Wheat {Mar 13}
+F6.C	MSCI World NTR Index Continuation
+F6H23	MSCI World NTR Index {Mar 23}
+F6U22	MSCI World NTR Index {Sep 22}
+F6Z22	MSCI World NTR Index {Dec 22}
+FJ	1-Month EONIA {Apr 11}
+FK	1-Month EONIA {Apr 11}
+G.C	10-Year Gilt Continuation
+GH23	10-Year Gilt {Mar 23}
+GU22	10-Year Gilt {Sep 22}
+GZ22	10-Year Gilt {Dec 22}
+IB.C	FTSE 100 Dividend Index Continuation
+IBZ22	FTSE 100 Dividend Index {Dec 22}
+IBZ23	FTSE 100 Dividend Index {Dec 23}
+IBZ24	FTSE 100 Dividend Index {Dec 24}
+IBZ25	FTSE 100 Dividend Index {Dec 25}
+IBZ26	FTSE 100 Dividend Index {Dec 26}
+IBZ27	FTSE 100 Dividend Index {Dec 27}
+IBZ28	FTSE 100 Dividend Index {Dec 28}
+IJ.C	1-Month EONIA Continuation
+IJF23	1-Month EONIA {Jan 23}
+IJF24	1-Month EONIA {Jan 24}
+IJG23	1-Month EONIA {Feb 23}
+IJG24	1-Month EONIA {Feb 24}
+IJH23	1-Month EONIA {Mar 23}
+IJH24	1-Month EONIA {Mar 24}
+IJJ23	1-Month EONIA {Apr 23}
+IJJ24	1-Month EONIA {Apr 24}
+IJK23	1-Month EONIA {May 23}
+IJK24	1-Month EONIA {May 24}
+IJM23	1-Month EONIA {Jun 23}
+IJM24	1-Month EONIA {Jun 24}
+IJN22	1-Month EONIA {Jul 22}
+IJN23	1-Month EONIA {Jul 23}
+IJN24	1-Month EONIA {Jul 24}
+IJQ22	1-Month EONIA {Aug 22}
+IJQ23	1-Month EONIA {Aug 23}
+IJU22	1-Month EONIA {Sep 22}
+IJU23	1-Month EONIA {Sep 23}
+IJV22	1-Month EONIA {Oct 22}
+IJV23	1-Month EONIA {Oct 23}
+IJX22	1-Month EONIA {Nov 22}
+IJX23	1-Month EONIA {Nov 23}
+IJZ22	1-Month EONIA {Dec 22}
+IJZ23	1-Month EONIA {Dec 23}
+IM.C	3-Month EuriBor Continuation
+IMF23	3-Month EuriBor {Jan 23}
+IMH23	3-Month EuriBor {Mar 23}
+IMH24	3-Month EuriBor {Mar 24}
+IMH25	3-Month EuriBor {Mar 25}
+IMH26	3-Month EuriBor {Mar 26}
+IMH27	3-Month EuriBor {Mar 27}
+IMH28	3-Month EuriBor {Mar 28}
+IMM23	3-Month EuriBor {Jun 23}
+IMM24	3-Month EuriBor {Jun 24}
+IMM25	3-Month EuriBor {Jun 25}
+IMM26	3-Month EuriBor {Jun 26}
+IMM27	3-Month EuriBor {Jun 27}
+IMM28	3-Month EuriBor {Jun 28}
+IMN22	3-Month EuriBor {Jul 22}
+IMQ22	3-Month EuriBor {Aug 22}
+IMU22	3-Month EuriBor {Sep 22}
+IMU23	3-Month EuriBor {Sep 23}
+IMU24	3-Month EuriBor {Sep 24}
+IMU25	3-Month EuriBor {Sep 25}
+IMU26	3-Month EuriBor {Sep 26}
+IMU27	3-Month EuriBor {Sep 27}
+IMV22	3-Month EuriBor {Oct 22}
+IMX22	3-Month EuriBor {Nov 22}
+IMZ22	3-Month EuriBor {Dec 22}
+IMZ23	3-Month EuriBor {Dec 23}
+IMZ24	3-Month EuriBor {Dec 24}
+IMZ25	3-Month EuriBor {Dec 25}
+IMZ26	3-Month EuriBor {Dec 26}
+IMZ27	3-Month EuriBor {Dec 27}
+L7.C	MSCI Europe NTR Index Continuation
+L7H23	MSCI Europe NTR Index {Mar 23}
+L7H24	MSCI Europe NTR Index {Mar 24}
+L7H25	MSCI Europe NTR Index {Mar 25}
+L7M23	MSCI Europe NTR Index {Jun 23}
+L7M24	MSCI Europe NTR Index {Jun 24}
+L7M25	MSCI Europe NTR Index {Jun 25}
+L7U22	MSCI Europe NTR Index {Sep 22}
+L7U23	MSCI Europe NTR Index {Sep 23}
+L7U24	MSCI Europe NTR Index {Sep 24}
+L7Z22	MSCI Europe NTR Index {Dec 22}
+L7Z23	MSCI Europe NTR Index {Dec 23}
+L7Z24	MSCI Europe NTR Index {Dec 24}
+QB.C	Ultra Gilt Continuation
+QBH23	Ultra Gilt {Mar 23}
+QBU22	Ultra Gilt {Sep 22}
+QBZ22	Ultra Gilt {Dec 22}
+QD.C	5-Year Gilt Continuation
+QDU22	5-Year Gilt {Sep 22}
+QDZ22	5-Year Gilt {Dec 22}
+QE.C	2-Year Gilt Continuation
+QEU22	2-Year Gilt {Sep 22}
+QEZ22	2-Year Gilt {Dec 22}
+VF.C	5-Yr Euro Swapnote Continuation
+VFU22	5-Yr Euro Swapnote {Sep 22}
+VFZ22	5-Yr Euro Swapnote {Dec 22}
+VT.C	10-Yr Euro Swapnote Continuation
+VTU22	10-Yr Euro Swapnote {Sep 22}
+VTZ22	10-Yr Euro Swapnote {Dec 22}
+VW.C	2-Yr Euro Swapnote Continuation
+VWU22	2-Yr Euro Swapnote {Sep 22}
+VWZ22	2-Yr Euro Swapnote {Dec 22}
+VX.C	2-Yr Dollar Swapnote Continuation
+VXU22	2-Yr Dollar Swapnote {Sep 22}
+VY.C	5-Yr Dollar Swapnote Continuation
+VYU22	5-Yr Dollar Swapnote {Sep 22}
+VZ.C	10Yr Dollar Swapnote Continuation
+VZU22	10Yr Dollar Swapnote {Sep 22}
+X.C	FTSE 100 Continuation
+XH23	FTSE 100 {Mar 23}
+XM23	FTSE 100 {Jun 23}
+XU22	FTSE 100 {Sep 22}
+XZ22	FTSE 100 {Dec 22}
+Y.C	FTSE 250 Continuation
+YH23	FTSE 250 {Mar 23}
+YM23	FTSE 250 {Jun 23}
+YU22	FTSE 250 {Sep 22}
+YZ22	FTSE 250 {Dec 22}

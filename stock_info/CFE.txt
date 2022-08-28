@@ -1,0 +1,13 @@
+Symbol	Description
+VI	S&P 500 VIX
+VI.C	S&P 500 VIX Continuation
+VIN22	
+VIQ22	
+VIU22	
+VIV22	
+VIX22	
+VIZ22	
+VJ.C	S&P 500 VIX Mini Continuation
+VJN22	
+VJQ22	
+VJU22	

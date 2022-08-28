@@ -1,0 +1,46 @@
+Symbol	Description
+DW	Durum Wheat
+IC	NCI National Corn
+IC.C	NCI National Corn Continuation
+ICN22	NCI National Corn {Jul 22}
+ICQ22	NCI National Corn {Aug 22}
+ICU22	NCI National Corn {Sep 22}
+IH	HRWI Hard Red
+IH.C	HRWI Hard Red Continuation
+IHN22	HRWI Hard Red {Jul 22}
+IHQ22	HRWI Hard Red {Aug 22}
+IHU22	HRWI Hard Red {Sep 22}
+IP	HRSI Hard Red Spring
+IP.C	HRSI Hard Red Spring Continuation
+IPN22	HRSI Hard Red Spring {Jul 22}
+IPQ22	HRSI Hard Red Spring {Aug 22}
+IPU22	HRSI Hard Red Spring {Sep 22}
+IS	NSI National Soybean
+IS.C	NSI National Soybean Continuation
+ISN22	NSI National Soybean {Jul 22}
+ISQ22	NSI National Soybean {Aug 22}
+ISU22	NSI National Soybean {Sep 22}
+IW	SRWI Soft Red Wheat
+IW.C	SRWI Soft Red Wheat Continuation
+IWN22	SRWI Soft Red Wheat {Jul 22}
+IWQ22	SRWI Soft Red Wheat {Aug 22}
+IWU22	SRWI Soft Red Wheat {Sep 22}
+MW	Spring Wheat
+MW.C	Spring Wheat Continuation
+MWH23	Spring Wheat {Mar 23}
+MWK23	Spring Wheat {May 23}
+MWN22	Spring Wheat {Jul 22}
+MWN23	Spring Wheat {Jul 23}
+MWU22	Spring Wheat {Sep 22}
+MWU23	Spring Wheat {Sep 23}
+MWZ22	Spring Wheat {Dec 22}
+MWZ23	Spring Wheat {Dec 23}
+NW	White Wheat
+VV.C	Spikes Futures Continuation
+VVF23	Spikes Futures {Jan 23}
+VVN22	Spikes Futures {Jul 22}
+VVQ22	Spikes Futures {Aug 22}
+VVU22	Spikes Futures {Sep 22}
+VVV22	Spikes Futures {Oct 22}
+VVX22	Spikes Futures {Nov 22}
+VVZ22	Spikes Futures {Dec 22}
