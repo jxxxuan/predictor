@@ -40,8 +40,8 @@ class Cdata3404Processor():
         self.range = np.arange(self.data.shape[1])
 
     def sample(self):
-        yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
-        x = np.zeros([self.batch_size,2,self.input_size],dtype='int16')
+        yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='float16')
+        x = np.zeros([self.batch_size,2,self.input_size],dtype='float16')
         
         for i in range(self.batch_size):
             x[i,0] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
