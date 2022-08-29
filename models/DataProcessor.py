@@ -41,12 +41,16 @@ class Cdata3404Processor():
 
     def sample(self):
         yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
-        x = np.zeros([self.batch_size,2,self.input_size],dtype='float32')
-        x
+        x = np.zeros([self.batch_size,2,self.input_size,1],dtype='float32')
         
         for i in range(self.batch_size):
+            x1 = range(128)
+            x2 = self.data[yp[i]][(x[i,0].astype('int16'))]
+            
+            '''
             x[i,0] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
             x[i,1] = self.data[yp[i]][(x[i,0].astype('int16'))]
+            '''
         return x,self.data[yp]
 
     def toDataBatch(self,batchsz=8):
