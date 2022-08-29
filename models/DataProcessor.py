@@ -41,7 +41,7 @@ class Cdata3404Processor():
 
     def sample(self):
         yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
-        x = np.zeros([self.batch_size,2,self.input_size,1],dtype='float32')
+        x = np.zeros([self.batch_size,2,self.input_size],dtype='float32')
         
         for i in range(self.batch_size):
             x1 = range(128)
