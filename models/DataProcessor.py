@@ -45,8 +45,8 @@ class Cdata3404Processor():
         
         for i in range(self.batch_size):
             x[i,0] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
-            x[i,1] = self.data[yp[i]][[x[i,0]]]
-            
+            x[i,1] = self.data[yp[i]][(x[i,0])]
+        print(x.shape)
         return x,self.data[yp]
 
     def toDataBatch(self,batchsz=8):
