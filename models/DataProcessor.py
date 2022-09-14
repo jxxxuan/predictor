@@ -41,17 +41,13 @@ class Cdata3404Processor():
 
     def sample(self):
         yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
-        x = np.zeros([self.batch_size,self.input_size],dtype='int16')
+        x = np.zeros([self.batch_size,2,self.input_size],dtype='int16')
         
         for i in range(self.batch_size):
-            x[i] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
-            x[i] = (np.maximum(0,self.data[yp[i]][(x[i])]) * self.data.shape[1]) + x[i]
-            
-        return x,self.data[yp]
+            x[i,0] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
+            x[i,1] = self.data[yp[i],x[i,0]]
 
-    def map_(x):
-        if x == 1:
-            return self.data.shape[1]
+        return x,self.data[yp]
     
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
