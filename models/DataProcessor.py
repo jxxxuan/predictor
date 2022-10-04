@@ -1,9 +1,14 @@
 import numpy as np
 import pandas as pd
-import tensorflow as tf
+from tensorflow import one_hot
+import json
 from tensorflow.data import Dataset
-from numpy import random
+import random
+from numpy import random as nrandom
 from time import time
+import sys
+sys.path.append(r'D:\Documents\predictor\reuters_news')
+from reuters_news_processer import utils
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -13,13 +18,13 @@ class Cdata6808Processor():
         self.range = np.arange(self.data.shape[0])
 
     def sample(self):
-        x = np.random.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
+        x = np.nrandom.randint(self.data.shape[1],size=[self.batch_size],dtype='int16')
 
         yp = []
         yn = []
         for i in range(self.batch_size):
-            yp.append(random.choice(self.range[self.data[:,x[i]] == 1], size=[self.avr]))  
-            yn.append(random.choice(self.range[self.data[:,x[i]] == -1], size=[self.avr]))
+            yp.append(nrandom.choice(self.range[self.data[:,x[i]] == 1], size=[self.avr]))  
+            yn.append(nrandom.choice(self.range[self.data[:,x[i]] == -1], size=[self.avr]))
 
         y = np.concatenate([self.data[yp],self.data[yn]],axis=2)
         y = np.mean(y,axis=1)
@@ -32,7 +37,7 @@ class Cdata6808Processor():
         return DataBatch
 
 class Cdata3404Processor():
-    def __init__(self,data,batch_size,input_size=100):
+    def __init__(self,data,batch_size=8,input_size=100):
         self.data = data
         self.batch_size = batch_size
         self.input_size= input_size
@@ -40,11 +45,11 @@ class Cdata3404Processor():
         self.range = np.arange(self.data.shape[1])
 
     def sample(self):
-        yp = random.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
+        yp = nrandom.randint(self.data.shape[0],size=[self.batch_size],dtype='int16')
         x = np.zeros([self.batch_size,2,self.input_size],dtype='int8')
         
         for i in range(self.batch_size):
-            x[i,0] = random.choice(self.range[self.b[yp[i]]],size=self.input_size)
+            x[i,0] = nrandom.choice(self.range[self.b[yp[i]]],size=self.input_size)
             x[i,1] = self.data[yp[i],x[i,0]]
 
         return x,self.data[yp]
@@ -68,16 +73,84 @@ class LabelProcessor():
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
-        y = tf.one_hot(y, depth=self.length)
+        y = one_hot(y, depth=self.length)
         DataBatch = Dataset.from_tensor_slices((x,y))
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
-if __name__ == '__main__':
+class NewsProcessor():
+    def __init__(self,file_path=None,batchsz=32):
+        self.data = self.load_data(file_path)
+        self.num_prg = len(self.data)
+        self.batchsz = batchsz
+
+    def load_data(self,file_path):
+        '''
+        with open(file_path,'r') as reader:
+            data = json.loads(reader.read())
+        '''
+        files = utils.get_reuters_news('ids_data')
+        data = []
+        for file in files[:10]:
+            with open(file['file_name'],'r') as reader:
+                text = json.loads(reader.read())
+            for news in text:
+                for p in news['content']:
+                    data.append(tuple(p))
+        return data
+            
+    def choice(self,b=0.1):
+        paragraphs = []
+        for i in range(self.batchsz):
+            paragraphs.append(self.data[random.randint(0,self.num_prg)])
+        
+        data = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
+        mask = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
+        for i in range(len(paragraphs)):
+            data[i,:len(paragraphs[i])] = paragraphs[i]
+            mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
+        return data,mask
+
+    def __call__(self):
+        output = dict()
+        output['input_word_ids'],output['input_mask'] = self.choice()
+        output['input_type_ids'] = np.zeros_like(output['input_word_ids'])
+        return output
+
+class albert_en_preprocess():
+  def __init__(self,vocab_file,ids_input=False,len_sequence=128):
+    self.ids_input = ids_input
+    if not self.ids_input:
+      self.vocab = load_vocab(vocab_file)
+    self.full_tokenizer = FullTokenizer(self.vocab)
+    self.len_sequence = len_sequence
     
-    data = np.load(r'C:\Users\Windows\Documents\GitHub\predictor\models\int_data\9172_test.npy')
+  def __call__(self,text,ids,mask=False):
+    input_mask = np.zeros(self.len_sequence,dtype='int8')
+    input_type_ids = np.zeros(self.len_sequence,dtype='int8')
+    if self.ids_input:
+      input_word_ids = self.ids
+    else:
+      tokens = self.full_tokenizer.tokenize(text)
+      input_word_ids = self.convert_tokens_to_ids(tokens)
+      if mask:
+        r = np.random.randint(2,size=input_word_ids.size)
+        input_mask[:r.size] = r
+      else:
+        input_mask[:len(tokens)+2] = 1
+
+    return {'input_word_ids':input_word_ids,'input_mask':input_mask,'input_type_ids':input_type_ids}
+
+  def convert_tokens_to_ids(self, tokens):
+    output = np.zeros(self.len_sequence,dtype='int32')
+    ids = self.full_tokenizer.convert_tokens_to_ids(tokens)
+    output[:len(ids)] = ids
+    return output
+
+
+if __name__ == '__main__':
+    pre = NewsProcessor()
+    #pre = NewsProcessor(r'D:\Documents\predictor\reuters_news\fine_tune.txt')
     t1 = time()
-    train_dp = Cdata3404Processor(data,64)
-    train_db = train_dp.toDataBatch()
-    print(next(iter(train_db))[1].shape)
+    print(pre())
     print(time() - t1)
