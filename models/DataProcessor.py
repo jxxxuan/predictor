@@ -7,8 +7,6 @@ import random
 from numpy import random as nrandom
 from time import time
 import sys
-sys.path.append(r'D:\Documents\predictor\reuters_news')
-from reuters_news_processer import utils
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -85,7 +83,7 @@ class NewsProcessor():
         self.batchsz = batchsz
 
     def load_data(self,file_path):
-        '''
+        
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -97,6 +95,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
+        '''
         return data
             
     def choice(self,b=0.1):
