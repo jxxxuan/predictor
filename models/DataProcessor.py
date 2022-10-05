@@ -105,7 +105,7 @@ class NewsProcessor():
 
     def load_vocab_file(self,vocab_file):
         nl = pd.read_csv(vocab_file,index_col=0)
-        vocab = nl['ids'].to_dict()
+        retrun nl['ids'].to_dict()
 
     def convert_ids_to_tokens(self,ids):
         output = []
@@ -128,7 +128,6 @@ class NewsProcessor():
 
     def __call__(self):
         inputs = dict()
-        
         inputs['input_word_ids'],inputs['input_mask'] = self.choice()
         encoder_inputs = dict(
             input_word_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids')),
