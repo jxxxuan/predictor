@@ -105,7 +105,7 @@ class NewsProcessor():
 
     def load_vocab_file(self,vocab_file):
         nl = pd.read_csv(vocab_file,index_col=0)
-        retrun nl['ids'].to_dict()
+        return nl['ids'].to_dict()
 
     def convert_ids_to_tokens(self,ids):
         output = []
