@@ -134,7 +134,7 @@ class NewsProcessor():
             input_mask=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask')),
             input_type_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids')),
         )
-        return Dataset.from_tensor_slices((output,output['input_word_ids']))
+        return Dataset.from_tensor_slices((encoder_inputs,encoder_inputs['input_word_ids']))
     
     
 class albert_en_preprocess():
