@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from tensorflow import one_hot
+import tensorflow as tf
 import json
 from tensorflow.data import Dataset
 import random
@@ -75,7 +75,7 @@ class LabelProcessor():
 
     def toDataBatch(self,batchsz=8):
         x,y = self.sample()
-        y = one_hot(y, depth=self.length)
+        y = tf.one_hot(y, depth=self.length)
         DataBatch = Dataset.from_tensor_slices((x,y))
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
@@ -172,5 +172,5 @@ if __name__ == '__main__':
     #pre = NewsProcessor()
     pre = NewsProcessor(r'D:\Documents\predictor\reuters_news\fine_tune.txt',r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv')
     t1 = time()
-    print(pre())
+    print(len(pre.vocab))
     print(time() - t1)
