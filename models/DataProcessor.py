@@ -7,6 +7,8 @@ import random
 from numpy import random as nrandom
 from time import time
 import sys
+sys.path.append(r'D:\Documents\predictor\reuters_news')
+from reuters_news_processer import utils
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -77,13 +79,14 @@ class LabelProcessor():
         return DataBatch
 
 class NewsProcessor():
-    def __init__(self,file_path=None,batchsz=32):
+    def __init__(self,file_path=None,vocab_file=None,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
+        self.vocab = self.load_vocab_file(vocab_file)
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -95,9 +98,18 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
         return data
-            
+
+    def load_vocab_file(self,vocab_file):
+        nl = pd.read_csv(vocab_file,index_col=0)
+        vocab = nl['ids'].to_dict()
+
+    def convert_ids_to_tokens(self,ids):
+        output = []
+        for item in ids:
+            output.append(vocab[item])
+        return output
+
     def choice(self,b=0.1):
         paragraphs = []
         for i in range(self.batchsz):
@@ -108,14 +120,16 @@ class NewsProcessor():
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
+        print(type(data))
         return data,mask
 
     def __call__(self):
         output = dict()
         output['input_word_ids'],output['input_mask'] = self.choice()
         output['input_type_ids'] = np.zeros_like(output['input_word_ids'])
-        return output
-
+        return Dataset.from_tensor_slices((output,output['input_word_ids']))
+    
+    
 class albert_en_preprocess():
   def __init__(self,vocab_file,ids_input=False,len_sequence=128):
     self.ids_input = ids_input
@@ -148,8 +162,8 @@ class albert_en_preprocess():
 
 
 if __name__ == '__main__':
-    pre = NewsProcessor()
-    #pre = NewsProcessor(r'D:\Documents\predictor\reuters_news\fine_tune.txt')
+    #pre = NewsProcessor()
+    pre = NewsProcessor(r'D:\Documents\predictor\reuters_news\fine_tune.txt',r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv')
     t1 = time()
     print(pre())
     print(time() - t1)
