@@ -165,7 +165,7 @@ class NewsProcessor():
             input_mask=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask')),
             input_type_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_type_ids'],dtype='int32',name='input_type_ids')),
         )
-        return encoder_inputs,encoder_inputs['input_word_ids']
+        return encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab))
     
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
