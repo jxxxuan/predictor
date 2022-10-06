@@ -6,11 +6,10 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
 import sys
 sys.path.append(r'D:\Documents\predictor\reuters_news')
 from reuters_news_processer import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -80,15 +79,46 @@ class LabelProcessor():
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
+    
+class albert_en_preprocess():
+  def __init__(self,vocab_file,ids_input=False,len_sequence=128):
+    self.ids_input = ids_input
+    if not self.ids_input:
+      self.vocab = load_vocab(vocab_file)
+    self.full_tokenizer = FullTokenizer(self.vocab)
+    self.len_sequence = len_sequence
+    
+  def __call__(self,text,ids,mask=False):
+    input_mask = np.zeros(self.len_sequence,dtype='int8')
+    input_type_ids = np.zeros(self.len_sequence,dtype='int8')
+    if self.ids_input:
+      input_word_ids = self.ids
+    else:
+      tokens = self.full_tokenizer.tokenize(text)
+      input_word_ids = self.convert_tokens_to_ids(tokens)
+      if mask:
+        r = np.random.randint(2,size=input_word_ids.size)
+        input_mask[:r.size] = r
+      else:
+        input_mask[:len(tokens)+2] = 1
+
+    return {'input_word_ids':input_word_ids,'input_mask':input_mask,'input_type_ids':input_type_ids}
+
+  def convert_tokens_to_ids(self, tokens):
+    output = np.zeros(self.len_sequence,dtype='int32')
+    ids = self.full_tokenizer.convert_tokens_to_ids(tokens)
+    output[:len(ids)] = ids
+    return output
+
 class NewsProcessor():
-    def __init__(self,file_path=None,vocab_file=None,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
         self.vocab = self.load_vocab_file(vocab_file)
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -100,7 +130,6 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -134,43 +163,14 @@ class NewsProcessor():
             input_mask=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask')),
             input_type_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids')),
         )
-        return Dataset.from_tensor_slices((encoder_inputs,encoder_inputs['input_word_ids']))
+        print(encoder_inputs['input_word_ids'])
+        return Dataset.from_tensor_slices((encoder_inputs,inputs['input_word_ids']))
     
-    
-class albert_en_preprocess():
-  def __init__(self,vocab_file,ids_input=False,len_sequence=128):
-    self.ids_input = ids_input
-    if not self.ids_input:
-      self.vocab = load_vocab(vocab_file)
-    self.full_tokenizer = FullTokenizer(self.vocab)
-    self.len_sequence = len_sequence
-    
-  def __call__(self,text,ids,mask=False):
-    input_mask = np.zeros(self.len_sequence,dtype='int8')
-    input_type_ids = np.zeros(self.len_sequence,dtype='int8')
-    if self.ids_input:
-      input_word_ids = self.ids
-    else:
-      tokens = self.full_tokenizer.tokenize(text)
-      input_word_ids = self.convert_tokens_to_ids(tokens)
-      if mask:
-        r = np.random.randint(2,size=input_word_ids.size)
-        input_mask[:r.size] = r
-      else:
-        input_mask[:len(tokens)+2] = 1
-
-    return {'input_word_ids':input_word_ids,'input_mask':input_mask,'input_type_ids':input_type_ids}
-
-  def convert_tokens_to_ids(self, tokens):
-    output = np.zeros(self.len_sequence,dtype='int32')
-    ids = self.full_tokenizer.convert_tokens_to_ids(tokens)
-    output[:len(ids)] = ids
-    return output
-
-
 if __name__ == '__main__':
-    #pre = NewsProcessor()
-    pre = NewsProcessor(r'D:\Documents\predictor\reuters_news\fine_tune.txt',r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv')
+    fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
+    vocab_file = r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv'
+    pre = NewsProcessor(vocab_file=vocab_file)
+    #pre = NewsProcessor(fine_tune,vocab_file)
     t1 = time()
-    print(len(pre.vocab))
+    print(pre())
     print(time() - t1)
