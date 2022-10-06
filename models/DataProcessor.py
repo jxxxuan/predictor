@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\reuters_news')
 from reuters_news_processer import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -119,7 +119,7 @@ class NewsProcessor():
         self.vocab = self.load_vocab_file(vocab_file)
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -131,7 +131,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+        
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -154,7 +154,6 @@ class NewsProcessor():
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
-        print(type(data))
         return data,mask
 
     def __call__(self):
@@ -162,17 +161,17 @@ class NewsProcessor():
         inputs['input_word_ids'],inputs['input_mask'] = self.choice()
         inputs['input_type_ids'] = np.zeros_like(inputs['input_word_ids'])
         encoder_inputs = dict(
-            input_word_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids')),
-            input_mask=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask')),
-            input_type_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_type_ids'],dtype='int32',name='input_type_ids')),
+            input_word_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_word_ids'],dtype='uint32',name='input_word_ids')),
+            input_mask=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_mask'],dtype='uint32',name='input_mask')),
+            input_type_ids=tf.keras.layers.Input(tensor=tf.convert_to_tensor(inputs['input_type_ids'],dtype='uint32',name='input_type_ids')),
         )
         return encoder_inputs,encoder_inputs['input_word_ids']
     
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
     vocab_file = r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file)
-    #pre = NewsProcessor(vocab_file,fine_tune)
+    #pre = NewsProcessor(vocab_file=vocab_file)
+    pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
     print(pre())
     print(time() - t1)
