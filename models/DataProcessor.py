@@ -6,10 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
+'''
 import sys
 sys.path.append(r'D:\Documents\predictor\reuters_news')
 from reuters_news_processer import utils
-
+'''
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -118,7 +119,7 @@ class NewsProcessor():
         self.vocab = self.load_vocab_file(vocab_file)
 
     def load_data(self,file_path):
-        '''
+        
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -130,6 +131,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
+        '''
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -169,8 +171,8 @@ class NewsProcessor():
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
     vocab_file = r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file)
-    #pre = NewsProcessor(fine_tune,vocab_file)
+    #pre = NewsProcessor(vocab_file=vocab_file)
+    pre = NewsProcessor(fine_tune,vocab_file)
     t1 = time()
     print(pre())
     print(time() - t1)
