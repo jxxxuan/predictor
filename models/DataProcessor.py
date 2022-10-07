@@ -112,13 +112,13 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,mask=False,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,masking=False,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
         self.vocab = self.load_vocab_file(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
-        self.mask = mask
+        self.masking = masking
 
     def load_data(self,file_path):
         
@@ -155,7 +155,7 @@ class NewsProcessor():
         mask = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            if self.mask:
+            if self.masking:
                 mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
             else:
                 mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
@@ -169,7 +169,7 @@ class NewsProcessor():
             input_mask=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask'),
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
-        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
+        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab))))
     
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
