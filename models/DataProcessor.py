@@ -112,11 +112,13 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,masking=False,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
         self.vocab = self.load_vocab_file(vocab_file)
+        self.inv_vocab = {v: k for k, v in self.vocab.items()}
+        self.mask = mask
 
     def load_data(self,file_path):
         
@@ -141,7 +143,7 @@ class NewsProcessor():
     def convert_ids_to_tokens(self,ids):
         output = []
         for item in ids:
-            output.append(self.vocab[item])
+            output.append(self.inv_vocab[item])
         return output
 
     def choice(self,b=0.1):
@@ -153,7 +155,10 @@ class NewsProcessor():
         mask = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
+            if self.mask:
+                mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
+            else:
+                mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
         return data,mask
 
     def __call__(self):
