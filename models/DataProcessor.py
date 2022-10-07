@@ -159,13 +159,12 @@ class NewsProcessor():
     def __call__(self):
         inputs = dict()
         inputs['input_word_ids'],inputs['input_mask'] = self.choice()
-        inputs['input_type_ids'] = np.zeros_like(inputs['input_word_ids'])
         encoder_inputs = dict(
             input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
             input_mask=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask'),
-            input_type_ids=tf.convert_to_tensor(inputs['input_type_ids'],dtype='int32',name='input_type_ids'),
+            input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
-        return encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab))
+        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
     
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
