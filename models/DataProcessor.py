@@ -141,7 +141,7 @@ class NewsProcessor():
     def convert_ids_to_tokens(self,ids):
         output = []
         for item in ids:
-            output.append(vocab[item])
+            output.append(self.vocab[item])
         return output
 
     def choice(self,b=0.1):
