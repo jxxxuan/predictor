@@ -112,7 +112,7 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,masking=False,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,mask=False,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
