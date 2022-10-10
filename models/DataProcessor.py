@@ -155,7 +155,7 @@ class NewsProcessor():
         mask = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
+            mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
             '''
             if self.masking:
                 mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
@@ -172,7 +172,7 @@ class NewsProcessor():
             input_mask=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask'),
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
-        return encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab))
+        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
     
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
