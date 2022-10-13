@@ -138,7 +138,7 @@ class NewsProcessor():
 
     def load_vocab_file(self,vocab_file):
         vocab = pd.read_csv(vocab_file,index_col=0)
-        return vocab[vocab['en']]['ids1'].to_dict()
+        return vocab[vocab['en_Trainable']]['ids1'].to_dict()
 
     def convert_ids_to_tokens(self,ids):
         output = []
