@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\reuters_news')
 from reuters_news_processer import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -121,11 +121,11 @@ class NewsProcessor():
         self.mask = mask
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
-        files = utils.get_reuters_news('ids_data')
+        files = utils.get_reuters_news(r'D:\Documents\predictor\data\reuters_news\ids_data')
         data = []
         for file in files[:10]:
             with open(file['file_name'],'r') as reader:
@@ -133,12 +133,11 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
         return data
 
     def load_vocab_file(self,vocab_file):
-        nl = pd.read_csv(vocab_file,index_col=0)
-        return nl['ids'].to_dict()
+        vocab = pd.read_csv(vocab_file,index_col=0)
+        return vocab[vocab['en']]['ids1'].to_dict()
 
     def convert_ids_to_tokens(self,ids):
         output = []
@@ -177,8 +176,8 @@ class NewsProcessor():
 if __name__ == '__main__':
     fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
     vocab_file = r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv'
-    #pre = NewsProcessor(vocab_file=vocab_file)
-    pre = NewsProcessor(vocab_file,fine_tune)
+    pre = NewsProcessor(vocab_file=vocab_file)
+    #pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
-    print(pre())
+    print(next(iter(pre())))
     print(time() - t1)
