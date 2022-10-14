@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
-sys.path.append(r'D:\Documents\predictor\reuters_news')
-from reuters_news_processer import utils
-'''
+sys.path.append(r'D:\Documents\predictor\news\reuters_news')
+from reuters_news_processor import utils
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -121,7 +121,7 @@ class NewsProcessor():
         self.mask = mask
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -133,7 +133,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+        
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -156,12 +156,10 @@ class NewsProcessor():
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
-            '''
-            if self.masking:
+            if self.mask:
                 mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
             else:
                 mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
-            '''
         return data,mask
 
     def __call__(self):
@@ -175,9 +173,9 @@ class NewsProcessor():
         return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
     
 if __name__ == '__main__':
-    fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
-    vocab_file = r'D:\Documents\predictor\reuters_news\reuters_news_processer\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file)
+    #fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
+    vocab_file = r'D:\Documents\predictor\data\vocab.csv'
+    pre = NewsProcessor(vocab_file=vocab_file,mask=True)
     #pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
     print(next(iter(pre())))
