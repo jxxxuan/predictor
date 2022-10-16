@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\news\reuters_news')
 from reuters_news_processor import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -112,16 +112,17 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,mask=False,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,max_length=128,mask=False,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
         self.vocab = self.load_vocab_file(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
         self.mask = mask
+        self.max_length = max_length
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -133,7 +134,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+        
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -146,16 +147,19 @@ class NewsProcessor():
             output.append(self.inv_vocab[item])
         return output
 
-    def choice(self,b=0.1):
+    def choice(self,b=0.15):
         paragraphs = []
         for i in range(self.batchsz):
-            paragraphs.append(self.data[random.randint(0,self.num_prg)])
+            p = self.data[random.randint(0,self.num_prg)]
+            if len(p) <= 128:
+                paragraphs.append(p)
+            else:
+                paragraphs.append(p[:self.max_length])
         
-        data = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
-        mask = np.zeros((self.batchsz,max([len(p) for p in paragraphs])),dtype='uint32')
+        data = np.zeros((self.batchsz,self.max_length),dtype='uint32')
+        mask = np.zeros((self.batchsz,self.max_length),dtype='uint32')
         for i in range(len(paragraphs)):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
             if self.mask:
                 mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
             else:
