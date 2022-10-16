@@ -8,8 +8,8 @@ from numpy import random as nrandom
 from time import time
 '''
 import sys
-sys.path.append(r'D:\Documents\predictor\news\reuters_news')
-from reuters_news_processor import utils
+sys.path.append(r'D:\Documents\predictor\news')
+from news_processor import utils
 '''
 
 class Cdata6808Processor():
@@ -112,13 +112,12 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,max_length=128,mask=False,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=32):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
         self.vocab = self.load_vocab_file(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
-        self.mask = mask
         self.max_length = max_length
 
     def load_data(self,file_path):
@@ -126,7 +125,7 @@ class NewsProcessor():
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
-        files = utils.get_reuters_news(r'D:\Documents\predictor\data\reuters_news\ids_data')
+        files = utils.get_files(r'D:\Documents\predictor\data\reuters_news\ids_data')
         data = []
         for file in files[:10]:
             with open(file['file_name'],'r') as reader:
@@ -151,19 +150,16 @@ class NewsProcessor():
         paragraphs = []
         for i in range(self.batchsz):
             p = self.data[random.randint(0,self.num_prg)]
-            if len(p) <= 128:
+            if len(p) <= self.max_length:
                 paragraphs.append(p)
             else:
                 paragraphs.append(p[:self.max_length])
         
-        data = np.zeros((self.batchsz,self.max_length),dtype='uint32')
-        mask = np.zeros((self.batchsz,self.max_length),dtype='uint32')
-        for i in range(len(paragraphs)):
+        data = np.zeros((self.batchsz,self.max_length),dtype='int32')
+        mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
+        for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            if self.mask:
-                mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
-            else:
-                mask[i,:len(paragraphs[i])] = np.ones(len(paragraphs[i]))
+            mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
         return data,mask
 
     def __call__(self):
@@ -177,9 +173,9 @@ class NewsProcessor():
         return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
     
 if __name__ == '__main__':
-    #fine_tune = r'D:\Documents\predictor\reuters_news\fine_tune.txt'
+    #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
     vocab_file = r'D:\Documents\predictor\data\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file,mask=True)
+    pre = NewsProcessor(vocab_file=vocab_file)
     #pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
     print(next(iter(pre())))
