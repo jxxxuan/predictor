@@ -159,18 +159,20 @@ class NewsProcessor():
         mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
         for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            mask[i,:len(paragraphs[i])] = nrandom.choice((0,1),[len(paragraphs[i])],p=[b,1-b])
-        return data,mask
+            mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
+        return data,mask,np.zeros((self.batchsz,self.max_length),dtype='int32')
 
     def __call__(self):
-        inputs = dict()
-        inputs['input_word_ids'],inputs['input_mask'] = self.choice()
+        
+        encoder_inputs = self.choice()
+        '''
         encoder_inputs = dict(
             input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
             input_mask=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask'),
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
-        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs['input_word_ids'],depth=len(self.vocab)))).batch(4)
+        '''
+        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(4)
     
 if __name__ == '__main__':
     #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
