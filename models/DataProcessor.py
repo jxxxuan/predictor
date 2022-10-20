@@ -160,7 +160,7 @@ class NewsProcessor():
         for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
-        return data,mask,np.zeros((self.batchsz,self.max_length),dtype='int32')
+        return tf.convert_to_tensor(data,name="input_word_ids"),tf.convert_to_tensor(mask,name="input_word_ids"),tf.zeros((self.batchsz,self.max_length),dtype='int32')
 
     def __call__(self):
         
