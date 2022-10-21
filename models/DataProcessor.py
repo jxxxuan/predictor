@@ -160,11 +160,11 @@ class NewsProcessor():
         for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
-            
-        data = tf.Variable(data,name="input_word_ids",dtype=tf.int32)
-        mask = tf.Variable(mask,name="input_mask",dtype=tf.int32)
-        
-        types = tf.Variable(tf.zeros((self.batchsz,self.max_length),dtype=tf.int32),name="input_type_ids")
+        '''
+        data = tf.conver(data,dtype=tf.int32)
+        mask = tf.Variable(mask,dtype=tf.int32)
+        '''
+        types = np.zeros((self.batchsz,self.max_length),dtype='int32')
         return data,mask,types
 
     def __call__(self):
