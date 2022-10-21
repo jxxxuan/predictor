@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-
+'''
 import sys
 sys.path.append(r'D:\Documents\predictor\news')
 from news_processor import utils
-
+'''
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -121,7 +121,7 @@ class NewsProcessor():
         self.max_length = max_length
 
     def load_data(self,file_path):
-        '''
+        
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -133,7 +133,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        
+        '''
         return data
 
     def load_vocab_file(self,vocab_file):
