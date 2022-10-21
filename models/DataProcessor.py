@@ -155,8 +155,8 @@ class NewsProcessor():
             else:
                 paragraphs.append(p[:self.max_length])
         
-        data = np.zeros((self.batchsz,self.max_length),dtype='uint16')
-        mask = np.zeros((self.batchsz,self.max_length),dtype='uint16')
+        data = np.zeros((self.batchsz,self.max_length),dtype='int32')
+        mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
         for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
@@ -164,7 +164,7 @@ class NewsProcessor():
         data = tf.conver(data,dtype=tf.int32)
         mask = tf.Variable(mask,dtype=tf.int32)
         '''
-        types = np.zeros((self.batchsz,self.max_length),dtype='uint16')
+        types = np.zeros((self.batchsz,self.max_length),dtype='int32')
         return data,mask,types
 
     def __call__(self):
