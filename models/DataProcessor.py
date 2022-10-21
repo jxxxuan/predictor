@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\news')
 from news_processor import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -121,7 +121,7 @@ class NewsProcessor():
         self.max_length = max_length
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -133,7 +133,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+        
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -169,7 +169,7 @@ class NewsProcessor():
 
     def __call__(self):
         encoder_inputs = self.choice()
-        print(encoder_inputs)
+        #print(encoder_inputs)
         '''
         encoder_inputs = dict(
             input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
@@ -177,7 +177,7 @@ class NewsProcessor():
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
         '''
-        return Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(4)
+        return encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab))
     
 if __name__ == '__main__':
     #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
@@ -185,6 +185,6 @@ if __name__ == '__main__':
     pre = NewsProcessor(vocab_file=vocab_file)
     #pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
-    pre()
+    print(pre()[0])
     #print(next(iter(pre())))
     print(time() - t1)
