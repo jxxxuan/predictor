@@ -6,11 +6,11 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\news')
 from news_processor import utils
-'''
+
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -121,7 +121,7 @@ class NewsProcessor():
         self.max_length = max_length
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -133,7 +133,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+        
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -160,11 +160,16 @@ class NewsProcessor():
         for i in range(self.batchsz):
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
-        return tf.convert_to_tensor(data,name="input_word_ids"),tf.convert_to_tensor(mask,name="input_word_ids"),tf.zeros((self.batchsz,self.max_length),dtype='int32')
+            
+        data = tf.Variable(data,name="input_word_ids")
+        mask = tf.Variable(mask,name="input_mask")
+        
+        types = tf.Variable(tf.zeros((self.batchsz,self.max_length),dtype='int32'),name="input_type_ids")
+        return data,mask,types
 
     def __call__(self):
-        
         encoder_inputs = self.choice()
+        print(encoder_inputs)
         '''
         encoder_inputs = dict(
             input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
@@ -180,5 +185,6 @@ if __name__ == '__main__':
     pre = NewsProcessor(vocab_file=vocab_file)
     #pre = NewsProcessor(vocab_file,fine_tune)
     t1 = time()
-    print(next(iter(pre())))
+    pre()
+    #print(next(iter(pre())))
     print(time() - t1)
