@@ -112,10 +112,11 @@ class albert_en_preprocess():
     return output
 
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=32):
+    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=32,batch=4):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
+        self.batch = batch
         self.vocab = self.load_vocab_file(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
         self.max_length = max_length
@@ -177,7 +178,7 @@ class NewsProcessor():
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
         '''
-        return tf.data.Dataset.from_tensor_slices(((encoder_inputs),tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(4)
+        return tf.data.Dataset.from_tensor_slices(((encoder_inputs),tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(self.batch)
     
 if __name__ == '__main__':
     #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
