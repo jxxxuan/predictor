@@ -166,7 +166,7 @@ class NewsProcessor():
         mask = tf.Variable(mask,dtype=tf.int32)
         '''
         types = np.zeros((self.batchsz,self.max_length),dtype='int32')
-        return [data,mask,types]
+        return data,mask,types
 
     def __call__(self):
         encoder_inputs = self.choice()
