@@ -133,8 +133,9 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
+        '''
         return data
-'''
+
     def load_vocab_file(self,vocab_file):
         vocab = pd.read_csv(vocab_file,index_col=0)
         return vocab[vocab['en_Trainable']]['en_ids'].to_dict()
