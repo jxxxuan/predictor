@@ -178,8 +178,7 @@ class NewsProcessor():
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
         '''
-        #return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(self.batch)
-        return encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab))
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(self.batch)
     
 if __name__ == '__main__':
     #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
