@@ -6,11 +6,10 @@ from tensorflow.data import Dataset
 import random
 from numpy import random as nrandom
 from time import time
-'''
+
 import sys
 sys.path.append(r'D:\Documents\predictor\news')
 from news_processor import utils
-'''
 
 class Cdata6808Processor():
     def __init__(self,data,batch_size,avr=1):
@@ -80,39 +79,8 @@ class LabelProcessor():
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
-    
-class albert_en_preprocess():
-  def __init__(self,vocab_file,ids_input=False,len_sequence=128):
-    self.ids_input = ids_input
-    if not self.ids_input:
-      self.vocab = load_vocab(vocab_file)
-    self.full_tokenizer = FullTokenizer(self.vocab)
-    self.len_sequence = len_sequence
-    
-  def __call__(self,text,ids,mask=False):
-    input_mask = np.zeros(self.len_sequence,dtype='int8')
-    input_type_ids = np.zeros(self.len_sequence,dtype='int8')
-    if self.ids_input:
-      input_word_ids = self.ids
-    else:
-      tokens = self.full_tokenizer.tokenize(text)
-      input_word_ids = self.convert_tokens_to_ids(tokens)
-      if mask:
-        r = np.random.randint(2,size=input_word_ids.size)
-        input_mask[:r.size] = r
-      else:
-        input_mask[:len(tokens)+2] = 1
-
-    return {'input_word_ids':input_word_ids,'input_mask':input_mask,'input_type_ids':input_type_ids}
-
-  def convert_tokens_to_ids(self, tokens):
-    output = np.zeros(self.len_sequence,dtype='int32')
-    ids = self.full_tokenizer.convert_tokens_to_ids(tokens)
-    output[:len(ids)] = ids
-    return output
-
 class NewsProcessor():
-    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=32,batch=4):
+    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=1,batch=1):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
@@ -122,7 +90,7 @@ class NewsProcessor():
         self.max_length = max_length
 
     def load_data(self,file_path):
-        
+        '''
         with open(file_path,'r') as reader:
             data = json.loads(reader.read())
         '''
@@ -134,7 +102,7 @@ class NewsProcessor():
             for news in text:
                 for p in news['content']:
                     data.append(tuple(p))
-        '''
+            
         return data
 
     def load_vocab_file(self,vocab_file):
@@ -148,29 +116,19 @@ class NewsProcessor():
         return output
 
     def choice(self,b=0.15):
-        paragraphs = []
-        for i in range(self.batchsz):
-            p = self.data[random.randint(0,self.num_prg)]
-            if len(p) <= self.max_length:
-                paragraphs.append(p)
-            else:
-                paragraphs.append(p[:self.max_length])
-        
+        paragraphs = np.random.choice(self.data,self.batchsz)
+
         data = np.zeros((self.batchsz,self.max_length),dtype='int32')
         mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
         for i in range(self.batchsz):
-            data[i,:len(paragraphs[i])] = paragraphs[i]
+            data[i,:len(paragraphs[i])] = paragraphs[i][:self.max_length]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
-        '''
-        data = tf.conver(data,dtype=tf.int32)
-        mask = tf.Variable(mask,dtype=tf.int32)
-        '''
+            
         types = np.zeros((self.batchsz,self.max_length),dtype='int32')
         return data,mask,types
 
     def __call__(self):
         encoder_inputs = self.choice()
-        #print(encoder_inputs)
         '''
         encoder_inputs = dict(
             input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
@@ -178,14 +136,14 @@ class NewsProcessor():
             input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
         )
         '''
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab)))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
-    #fine_tune = r'D:\Documents\predictor\reuters_news\test.txt'
+    #test_file = r'D:\Documents\predictor\reuters_news\test.txt'
     vocab_file = r'D:\Documents\predictor\data\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file)
-    #pre = NewsProcessor(vocab_file,fine_tune)
+    pre = NewsProcessor(vocab_file=vocab_file,batchsz=1)
+    #pre = NewsProcessor(vocab_file,test_file)
     t1 = time()
-    print(next(iter(pre()))[0])
-    #print(next(iter(pre())))
+    #print(pre.convert_ids_to_tokens(next(iter(pre()))[0][0][0].numpy()))
+    print(next(iter(pre())))
     print(time() - t1)
