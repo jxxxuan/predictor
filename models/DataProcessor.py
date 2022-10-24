@@ -121,7 +121,8 @@ class NewsProcessor():
         data = np.zeros((self.batchsz,self.max_length),dtype='int32')
         mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
         for i in range(self.batchsz):
-            data[i,:len(paragraphs[i])] = paragraphs[i][:self.max_length]
+            paragraphs[i] = paragraphs[i][:self.max_length]
+            data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
             
         types = np.zeros((self.batchsz,self.max_length),dtype='int32')
