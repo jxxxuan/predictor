@@ -117,14 +117,14 @@ class NewsProcessor():
 
     def choice(self,b=0.15):
         paragraphs = np.random.choice(self.data,self.batchsz)
-        data = np.zeros((self.batchsz,self.max_length),dtype='int32')
-        mask = np.zeros((self.batchsz,self.max_length),dtype='int32')
+        data = np.zeros((self.batchsz,self.max_length),dtype='int16')
+        mask = np.zeros((self.batchsz,self.max_length),dtype='int16')
         for i in range(self.batchsz):
             paragraphs[i] = paragraphs[i][:self.max_length]
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
             
-        types = np.zeros((self.batchsz,self.max_length),dtype='int32')
+        types = np.zeros((self.batchsz,self.max_length),dtype='int16')
         return data,mask,types
 
     def __call__(self):
