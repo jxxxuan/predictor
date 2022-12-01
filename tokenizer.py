@@ -346,7 +346,6 @@ class WordpieceTokenizer(object):
         tokens.extend(sub_tokens)
       else:
         tokens.append(token)
-    print(tokens)
     return tokens
 
   def load_new_voab(self,new_vocab_file):
@@ -392,5 +391,5 @@ def _is_punctuation(char):
   return False
 
 if __name__ == '__main__':
-  pre = FullTokenizer(r'D:\Documents\predictor\data\vocab.csv')
-  print(pre.tokenize('playing'))
+  pre = FullTokenizer(r'C:\Users\User\Documents\predictor\data\vocab.csv')
+  print(pre.convert_tokens_to_ids(pre.tokenize('hello world')))
