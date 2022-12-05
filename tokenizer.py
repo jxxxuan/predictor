@@ -14,11 +14,6 @@ import numpy as np
 def validate_case_matches_checkpoint(do_lower_case, init_checkpoint):
   """Checks whether the casing config is consistent with the checkpoint name."""
 
-  # The casing has to be passed in by the user and there is no explicit check
-  # as to whether it matches the checkpoint. The casing information probably
-  # should have been stored in the bert_config.json file, but it's not, so
-  # we have to heuristically detect it to validate.
-
   if not init_checkpoint:
     return
 
@@ -60,7 +55,6 @@ def validate_case_matches_checkpoint(do_lower_case, init_checkpoint):
         "just comment out this check." % (actual_flag, init_checkpoint,
                                           model_name, case_name, opposite_flag))
 
-
 def convert_to_unicode(text):
   """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
   if isinstance(text, str):
@@ -73,9 +67,6 @@ def convert_to_unicode(text):
 
 def printable_text(text):
   """Returns text encoded in a way suitable for print or `tf.logging`."""
-
-  # These functions want `str` for both Python2 and Python3, but in one case
-  # it's a Unicode string and in the other it's a byte string.
   if six.PY3:
     if isinstance(text, str):
       return text
@@ -109,13 +100,6 @@ def load_vocab(vocab_file):
   """
   return nl.loc[nl.en_Trainable,'en_ids1'].to_dict()
 
-def save_vocab(vocab_file,vocab_dict):
-  pd.DataFrame(data=vocab_dict.values(),columns=['ids'],index=vocab_dict.keys()).to_csv(vocab_file)
-
-def convert_by_vocab(vocab, items):
-  """Converts a sequence of [tokens|ids] using the vocab."""
-  
-
 def whitespace_tokenize(text):
   """Runs basic whitespace cleaning and splitting on a piece of text."""
   text = text.strip()
@@ -124,31 +108,34 @@ def whitespace_tokenize(text):
   tokens = text.split()
   return tokens
 
-
 class albert_en_preprocess():
-  def __init__(self,vocab_file,len_sequence):
-    self.vocab = load_vocab(vocab_file)
-    self.full_tokenizer = FullTokenizer(self.vocab)
+  def __init__(self,vocab_file,len_sequence=128):
+    self.full_tokenizer = FullTokenizer(vocab_file)
     self.len_sequence = len_sequence
     
-  def __call__(self,text,mask=False):
-    tokens = self.full_tokenizer.tokenize(text)
-    input_word_ids = self.convert_tokens_to_ids(tokens)
-    input_mask = np.zeros(self.len_sequence,dtype='int8')
-    input_type_ids = np.zeros(self.len_sequence,dtype='int8')
-    if mask:
-      r = np.random.randint(2,size=input_word_ids.size)
-      input_mask[:r.size] = r
-    else:
-      input_mask[:len(tokens)+2] = 1
+  def __call__(self,text):
+    tokens = self.full_tokenizer.encode(self.full_tokenizer.tokenize(text))
 
-    return {'input_word_ids':input_word_ids,'input_mask':input_mask,'input_type_ids':input_type_ids}
+    input_word_ids = np.zeros((1,self.len_sequence),dtype='int32')
+    input_word_ids[0,:len(tokens)] = tokens
+    
+    input_mask = np.zeros((1,self.len_sequence),dtype='int32')
+    input_mask[0,:len(tokens)] = np.ones(len(tokens),dtype='int32')
+    input_mask[0,1] = 0
+    for i in tokens:
+      break
+      if i == 23044:
+        input_mask[0,tokens.index(i)] = 0
+        
+    input_type_ids = np.zeros((1,self.len_sequence),dtype='int32')
 
-  def convert_tokens_to_ids(self, tokens):
-    output = np.zeros(self.len_sequence,dtype='int16')
-    ids = self.full_tokenizer.convert_tokens_to_ids(tokens)
-    output[:len(ids)] = ids
-    return output
+    return [input_word_ids,input_mask,input_type_ids]
+
+  def encode(self, tokens):
+    return self.full_tokeinzer.encode(tokens)
+
+  def decode(self, ids):
+    return self.full_tokenizer.decode(ids)
   
 class FullTokenizer(object):
   """Runs end-to-end tokenziation."""
@@ -166,15 +153,30 @@ class FullTokenizer(object):
         split_tokens.append(sub_token)
     return split_tokens
 
-  def convert_tokens_to_ids(self, tokens):
+  def encode(self, tokens):
     output = [2]
     for token in tokens:
       output.append(self.vocab[token])
     output.append(3)
     return output
 
-  def convert_ids_to_tokens(self, ids):
-    return convert_by_vocab(self.inv_vocab, ids)
+  def decode(self, ids):
+    s = ""
+    group_token = False
+    for i in ids:
+      if i == 48:
+        group_token = True
+        continue
+      if i == 49:
+        group_token = False
+        s += " "
+        continue
+      if i not in [2,3,0]:
+        s += self.inv_vocab[i]
+        if not group_token:
+          s += " "
+          
+    return s[:-1]
 
   def save_new_vocab(self,new_vocab_file,vocabs):
     pd.DataFrame(data=vocabs.values(),columns=['vocab']).to_csv(new_vocab_file)
@@ -195,13 +197,6 @@ class BasicTokenizer(object):
     """Tokenizes a piece of text."""
     text = convert_to_unicode(text)
     text = self._clean_text(text)
-
-    # This was added on November 1st, 2018 for the multilingual and Chinese
-    # models. This is also applied to the English models now, but it doesn't
-    # matter since the English models were not trained on any Chinese data
-    # and generally don't have any Chinese data in them (there are Chinese
-    # characters in the vocabulary because Wikipedia does have some Chinese
-    # words in the English Wikipedia.).
     text = self._tokenize_chinese_chars(text)
 
     orig_tokens = whitespace_tokenize(text)
@@ -259,15 +254,6 @@ class BasicTokenizer(object):
     return "".join(output)
 
   def _is_chinese_char(self, cp):
-    """Checks whether CP is the codepoint of a CJK character."""
-    # This defines a "chinese character" as anything in the CJK Unicode block:
-    #   https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
-    #
-    # Note that the CJK Unicode block is NOT all Japanese and Korean characters,
-    # despite its name. The modern Korean Hangul alphabet is a different block,
-    # as is Japanese Hiragana and Katakana. Those alphabets are used to write
-    # space-separated words, so they are not treated specially and handled
-    # like the all of the other languages.
     if ((cp >= 0x4E00 and cp <= 0x9FFF) or  #
         (cp >= 0x3400 and cp <= 0x4DBF) or  #
         (cp >= 0x20000 and cp <= 0x2A6DF) or  #
@@ -302,28 +288,8 @@ class WordpieceTokenizer(object):
     self.unk_token = unk_token
     self.max_input_chars_per_word = max_input_chars_per_word
     self.return_org = return_org
-    '''
-    self.new_vocab = load_new_voab(new_vocab_file)
-    '''
 
   def tokenize(self, text):
-    """Tokenizes a piece of text into its word pieces.
-
-    This uses a greedy longest-match-first algorithm to perform tokenization
-    using the given vocabulary.
-
-    For example:
-      input = "unaffable"
-      output = ["un", "##aff", "##able"]
-
-    Args:
-      text: A single token or whitespace separated tokens. This should have
-        already been passed through `BasicTokenizer.
-
-    Returns:
-      A list of wordpiece tokens.
-    """
-    
     tokens = []
     for token in whitespace_tokenize(text):
       if len(token) > self.max_input_chars_per_word:
@@ -362,7 +328,6 @@ def _is_whitespace(char):
     return True
   return False
 
-
 def _is_control(char):
   """Checks whether `chars` is a control character."""
   # These are technically control characters but we count them as whitespace
@@ -374,14 +339,10 @@ def _is_control(char):
     return True
   return False
 
-
 def _is_punctuation(char):
   """Checks whether `chars` is a punctuation character."""
   cp = ord(char)
-  # We treat all non-letter/number ASCII as punctuation.
-  # Characters such as "^", "$", and "`" are not in the Unicode
-  # Punctuation class but we treat them as punctuation anyways, for
-  # consistency.
+  
   if ((cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or
       (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126)):
     return True
@@ -391,5 +352,11 @@ def _is_punctuation(char):
   return False
 
 if __name__ == '__main__':
-  pre = FullTokenizer(r'C:\Users\User\Documents\predictor\data\vocab.csv')
-  print(pre.convert_tokens_to_ids(pre.tokenize('hello world')))
+  pre = albert_en_preprocess(r'C:\Users\User\Documents\predictor\data\vocab.csv',len_sequence=256)
+  x = pre('india is the largest country in the world')
+  print(x)
+  albert = tf.saved_model.load(r'C:\Users\User\Documents\predictor\models\NewsReader\Albert_en\Albert_encoder')
+  decoder = tf.saved_model.load(r'C:\Users\User\Documents\predictor\models\NewsReader\Albert_en\Decoder')
+  y = decoder(albert(x)[0])
+  print(tf.argmax(y,axis=-1)[0])
+  print(pre.decode(tf.argmax(y,axis=-1)[0].numpy()))
