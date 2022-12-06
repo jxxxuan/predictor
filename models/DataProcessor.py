@@ -80,7 +80,7 @@ class LabelProcessor():
         return DataBatch
 
 class Albert_Trainer():
-    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=1,batch=1):
+    def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=1,batch=1,b=0.15):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
         self.batchsz = batchsz
@@ -88,6 +88,7 @@ class Albert_Trainer():
         self.vocab = self.load_vocab_file(vocab_file)
         self.inv_vocab = {v: k for k, v in self.vocab.items()}
         self.max_length = max_length
+        self.b = b
 
     def load_data(self,file_path):
         
@@ -115,7 +116,7 @@ class Albert_Trainer():
             output.append(self.inv_vocab[item])
         return output
 
-    def choice(self,b=0.10):
+    def choice(self):
         paragraphs = np.random.choice(self.data,self.batchsz)
         data = np.zeros((self.batchsz,self.max_length),dtype='int16')
         mask = np.zeros((self.batchsz,self.max_length),dtype='int16')
@@ -126,7 +127,7 @@ class Albert_Trainer():
             output[i,:len(paragraphs[i])] = paragraphs[i]
             data[i,:len(paragraphs[i])] = paragraphs[i]
             mask[i,:len(paragraphs[i])] = np.ones((len(paragraphs[i])))
-        data[np.random.choice([False,True],size=data.shape,p=[1-b,b])] = 29
+        data[np.random.choice([False,True],size=data.shape,p=[1-self.b,self.b])] = 29
         return data,mask,types,output
 
     def __call__(self):
