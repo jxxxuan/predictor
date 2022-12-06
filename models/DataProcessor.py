@@ -79,7 +79,7 @@ class LabelProcessor():
         DataBatch = DataBatch.batch(batchsz)
         return DataBatch
 
-class NewsProcessor():
+class Albert_Trainer():
     def __init__(self,vocab_file=None,file_path=None,max_length=128,batchsz=1,batch=1):
         self.data = self.load_data(file_path)
         self.num_prg = len(self.data)
@@ -115,35 +115,28 @@ class NewsProcessor():
             output.append(self.inv_vocab[item])
         return output
 
-    def choice(self,b=0.15):
+    def choice(self,b=0.10):
         paragraphs = np.random.choice(self.data,self.batchsz)
         data = np.zeros((self.batchsz,self.max_length),dtype='int16')
         mask = np.zeros((self.batchsz,self.max_length),dtype='int16')
+        types = np.zeros((self.batchsz,self.max_length),dtype='int16')
+        output = np.zeros((self.batchsz,self.max_length),dtype='int16')
         for i in range(self.batchsz):
             paragraphs[i] = paragraphs[i][:self.max_length]
+            output[i,:len(paragraphs[i])] = paragraphs[i]
             data[i,:len(paragraphs[i])] = paragraphs[i]
-            mask[i,:len(paragraphs[i])] = np.random.choice([0,1],size=len(paragraphs[i]),p=[b,1-b])
-            
-        types = np.zeros((self.batchsz,self.max_length),dtype='int16')
-        return data,mask,types
+            mask[i,:len(paragraphs[i])] = np.ones((len(paragraphs[i])))
+        data[np.random.choice([False,True],size=data.shape,p=[1-b,b])] = 29
+        return data,mask,types,output
 
     def __call__(self):
         encoder_inputs = self.choice()
-        '''
-        encoder_inputs = dict(
-            input_word_ids=tf.convert_to_tensor(inputs['input_word_ids'],dtype='int32',name='input_word_ids'),
-            input_mask=tf.convert_to_tensor(inputs['input_mask'],dtype='int32',name='input_mask'),
-            input_type_ids=tf.convert_to_tensor(np.zeros_like(inputs['input_word_ids']),dtype='int32',name='input_type_ids'),
-        )
-        '''
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[0],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
-    #test_file = r'D:\Documents\predictor\reuters_news\test.txt'
-    vocab_file = r'D:\Documents\predictor\data\vocab.csv'
-    pre = NewsProcessor(vocab_file=vocab_file,batchsz=1)
-    #pre = NewsProcessor(vocab_file,test_file)
+    test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
+    vocab_file = r'C:\Users\User\Documents\predictor\data\vocab.csv'
+    pre = Albert_Trainer(vocab_file,test_file,batchsz=2,batch=2)
     t1 = time()
-    #print(pre.convert_ids_to_tokens(next(iter(pre()))[0][0][0].numpy()))
     print(next(iter(pre())))
     print(time() - t1)
