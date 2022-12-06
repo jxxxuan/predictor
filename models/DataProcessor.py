@@ -131,12 +131,12 @@ class Albert_Trainer():
 
     def __call__(self):
         encoder_inputs = self.choice()
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:2],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
     test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
     vocab_file = r'C:\Users\User\Documents\predictor\data\vocab.csv'
     pre = Albert_Trainer(vocab_file,test_file,batchsz=2,batch=2)
     t1 = time()
-    print(next(iter(pre())))
+    print(pre())
     print(time() - t1)
