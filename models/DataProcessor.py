@@ -131,7 +131,7 @@ class Albert_Trainer():
 
     def __call__(self):
         encoder_inputs = self.choice()
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:2],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:3],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
     test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
