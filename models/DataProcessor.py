@@ -131,13 +131,13 @@ class Albert_Trainer():
         return data,mask,types,output
 
     def __call__(self):
+        t1 = time()
         encoder_inputs = self.choice()
+        print("Generate data -",time() - t1)
         return tf.data.Dataset.from_tensor_slices((encoder_inputs[:3],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
     test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
     vocab_file = r'C:\Users\User\Documents\predictor\data\vocab.csv'
     pre = Albert_Trainer(vocab_file,test_file,batchsz=2,batch=2)
-    t1 = time()
-    print(pre())
-    print(time() - t1)
+    pre()
