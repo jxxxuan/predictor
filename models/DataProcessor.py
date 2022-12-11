@@ -114,11 +114,11 @@ class Albert_Trainer():
         types = np.zeros((self.batchsz,self.max_length),dtype='int16')
         output = np.zeros((self.batchsz,self.max_length),dtype='int16')
         for i in range(self.batchsz):
-            temp = np.full((len(paragraphs[i])),False)
-            temp[:self.max_length] = True
-            
             paragraphs[i] = paragraphs[i][:self.max_length]
             output[i,:len(paragraphs[i])] = paragraphs[i]
+            
+            temp = np.full((len(paragraphs[i])),False)
+            temp[:self.max_length] = True
             
             skip = False
             for t in range(len(paragraphs[i])):
@@ -138,7 +138,7 @@ class Albert_Trainer():
         t1 = time()
         encoder_inputs = self.choice()
         print("Generate data -",time() - t1)
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:2],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:3],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
     test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
