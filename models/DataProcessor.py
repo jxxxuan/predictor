@@ -135,7 +135,7 @@ class Albert_Trainer():
             mask[i,:len(temp[temp])] = 1
             '''
             
-        data[np.random.choice([False,True],size=data.shape,p=[1-self.b*1/2,self.b*1/2])] = 29
+        data[np.random.choice([False,True],size=data.shape,p=[1-self.b,self.b])] = 29
         return data,mask,types,output
 
     def __call__(self):
