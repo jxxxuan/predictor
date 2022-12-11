@@ -116,7 +116,9 @@ class Albert_Trainer():
         for i in range(self.batchsz):
             paragraphs[i] = paragraphs[i][:self.max_length]
             output[i,:len(paragraphs[i])] = paragraphs[i]
-            
+            data[i,:len(paragraphs[i])] = paragraphs[i]
+            mask[i,:len(paragraphs[i])] = 1
+            '''
             temp = np.full((len(paragraphs[i])),False)
             temp[:self.max_length] = True
             
@@ -131,6 +133,8 @@ class Albert_Trainer():
                         skip = False
             data[i,:len(temp[temp])] = np.array(paragraphs[i])[temp]
             mask[i,:len(temp[temp])] = 1
+            '''
+            
         data[np.random.choice([False,True],size=data.shape,p=[1-self.b*1/2,self.b*1/2])] = 29
         return data,mask,types,output
 
@@ -138,7 +142,7 @@ class Albert_Trainer():
         t1 = time()
         encoder_inputs = self.choice()
         print("Generate data -",time() - t1)
-        return tf.data.Dataset.from_tensor_slices((encoder_inputs[:3],tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
+        return tf.data.Dataset.from_tensor_slices((encoder_inputs,tf.one_hot(encoder_inputs[-1],depth=len(self.vocab),dtype="int8"))).batch(self.batch)
     
 if __name__ == '__main__':
     test_file = r'C:\Users\User\Documents\predictor\data\reuters_news\test.txt'
